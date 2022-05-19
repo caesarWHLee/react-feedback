@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import TextField from './TextField'
 
 const Form = styled.form`
   display: flex;
@@ -28,7 +30,10 @@ const Button = styled.button`
   line-height: 27px;
 
   &:hover, &:focus {
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: #000928;
+  }
+  &:disabled {
+    background-color: #e0e0e0;
   }
 
   @media (max-width: 768px) {
@@ -37,13 +42,54 @@ const Button = styled.button`
 `
 
 export default function FeedbackForm(props) {
+  const [enableSumbit, setEnableSubmit] = useState(false)
+  const [textAreaValue, setTextAreaValue] = useState('')
+
+  useEffect(() => {
+    const isScriptExist = document.getElementById('recaptcha-key')
+
+    if (!isScriptExist) {
+      const script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = 'https://www.google.com/recaptcha/enterprise.js?render=6LeHLAEgAAAAADb0pcN6CVZdgD7KFDtCFElRu-f7'
+      script.id = 'recaptcha-key'
+      script.onload = () => {
+        console.log('recaptcha-key script loaded')
+      }
+      document.body.appendChild(script)
+
+      if (isScriptExist) {
+        console.log('recaptcha-key script loaded')
+      }
+    }
+  }, [])
+
+  const textAreaChanged = (e) => {
+    const value = e.target.value
+    setEnableSubmit(!!value)
+    setTextAreaValue(value)
+  }
   const submitHandler = (e) => {
-    const form = e.target;
+    e.preventDefault();
+    console.log(textAreaValue)
+
+    if (!textAreaValue.trim()) {
+      return
+    }
+
+    const { grecaptcha } = window
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute('6LeHLAEgAAAAADb0pcN6CVZdgD7KFDtCFElRu-f7', { action: 'submit' })
+      console.log(token)
+    })
+
+    setTextAreaValue('')
+    setEnableSubmit(false)
   }
   return <Form onSubmit={submitHandler}>
-    {props.children}
+    <TextField textAreaValue={textAreaValue} onChange={textAreaChanged} />
     <ButtonWrapper>
-      <Button>送出</Button>
+      <Button disabled={!enableSumbit}>送出</Button>
     </ButtonWrapper>
   </Form>
 }

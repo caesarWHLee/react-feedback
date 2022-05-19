@@ -20,6 +20,6 @@ const Textarea = styled.textarea`
 
 export default function TextField(props) {
   return <Wrapper>
-    <Textarea placeholder="跟大家分享你的經驗..." name="feedback-post" />
+    <Textarea placeholder="跟大家分享你的經驗..." name="feedback-post" onChange={props.onChange} value={props.textAreaValue} />
   </Wrapper>
 }
