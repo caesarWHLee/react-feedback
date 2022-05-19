@@ -16,10 +16,6 @@ const Textarea = styled.textarea`
   box-sizing: border-box;
   vertical-align: top;
   overflow: auto;
-
-  &:focus {
-    border-color: rebeccapurple;
-  }
 `
 
 export default function TextField(props) {

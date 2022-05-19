@@ -30,6 +30,10 @@ const Button = styled.button`
   &:hover, &:focus {
     background-color: rgba(0, 0, 0, 0.15);
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `
 
 export default function FeedbackForm(props) {
