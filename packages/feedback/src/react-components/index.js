@@ -1,10 +1,12 @@
-import FeedbackForm from './components/FeedbackForm';
-import ThumbsForm from './components/ThumbsForm'
-import Feedbacks from './components/Feedbacks';
-import Section from './components/Section';
+import React from 'react'
+
+import FeedbackForm from './feedback/FeedbackForm';
+import ThumbsForm from './feedback/ThumbsForm'
+import Feedbacks from './feedback/Feedbacks';
+import Section from './feedback/Section';
 import form from './data/feedback-form.json'
 
-function App() {
+export default function Feedback() {
   return (
     <>
       <Section>
@@ -23,5 +25,3 @@ function App() {
     </>
   );
 }
-
-export default App;

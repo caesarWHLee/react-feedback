@@ -1,5 +1,10 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import styled from 'styled-components'
+
+import ThumbUpSvg from './icon-thumb-up.svg'
+import ThumbUpActiveSvg from './icon-thumb-up-active.svg'
+import ThumbDownSvg from './icon-thumb-down.svg'
+import ThumbDownActiveSvg from './icon-thumb-down-active.svg'
 
 const Wrapper = styled.div`
   display: flex;
@@ -53,6 +58,9 @@ const ThumbIconWrapper = styled.div`
   &:hover, &:active {
     border-color: #000928;
   }
+  &:active {
+    background-color: #edeff2;
+  }
 `
 
 const Input = styled.input`
@@ -75,6 +83,8 @@ const ThumbStatistic = styled.span`
 export default function ThumbsField(props) {
   const [thumbUpChecked, setThumbUpChecked] = useState(false)
   const [thumbDownChecked, setThumbDownChecked] = useState(false)
+  const [thumbUpPressing, setThumbUpPressing] = useState(false)
+  const [thumbDownPressing, setThumbDownPressing] = useState(false)
   const timerRef = useRef(null)
   const initialMounted = useRef(true)
 
@@ -106,12 +116,12 @@ export default function ThumbsField(props) {
     }, 1000)
 
     return () => {
-      clearTimer()
+      // clearTimer()
     }
   }, [thumbUpChecked, thumbDownChecked, clearTimer])
 
   const thumbUpRadioClicked = () => {
-    console.log('thumbUpRadioClicked')
+    setThumbUpPressing(false)
     setThumbUpChecked((thumbUpChecked) => {
       if (thumbUpChecked) {
         return false
@@ -122,6 +132,7 @@ export default function ThumbsField(props) {
     })
   }
   const thumbDownRadioClicked = () => {
+    setThumbDownPressing(false)
     setThumbDownChecked((thumbDownChecked) => {
       if (thumbDownChecked) {
         return false
@@ -132,24 +143,23 @@ export default function ThumbsField(props) {
     })
   }
 
-
   return <Wrapper>
     <Title>這個結果符合實際情況嗎?</Title>
     <Thumbs>
       <Thumb>
-        <ThumbMockLabel onClick={thumbUpRadioClicked}>符合
+        <ThumbMockLabel onMouseDown={() => { setThumbUpPressing(true) }} onMouseUp={thumbUpRadioClicked}>符合
           <Input type="radio" name="thumbs" onChange={() => { }} checked={thumbUpChecked} />
           <ThumbIconWrapper>
-            <img src={`images/${thumbUpChecked ? 'icon-thumb-up-active.svg' : 'icon-thumb-up.svg'}`} alt="thumb up icon" />
+            {thumbUpPressing || thumbUpChecked ? <ThumbUpActiveSvg /> : <ThumbUpSvg />}
           </ThumbIconWrapper>
         </ThumbMockLabel>
         <ThumbStatistic>128</ThumbStatistic>
       </Thumb>
       <Thumb>
-        <ThumbMockLabel onClick={thumbDownRadioClicked}>不符合
+        <ThumbMockLabel onMouseDown={() => { setThumbDownPressing(true) }} onMouseUp={thumbDownRadioClicked}>不符合
           <Input type="radio" name="thumbs" onChange={() => { }} checked={thumbDownChecked} />
           <ThumbIconWrapper>
-            <img src={`images/${thumbDownChecked ? 'icon-thumb-down-active.svg' : 'icon-thumb-down.svg'}`} alt="thumb up icon" />
+            {thumbDownPressing || thumbDownChecked ? <ThumbDownActiveSvg /> : <ThumbDownSvg />}
           </ThumbIconWrapper>
         </ThumbMockLabel>
         <ThumbStatistic>9</ThumbStatistic>

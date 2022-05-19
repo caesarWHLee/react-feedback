@@ -1,5 +1,7 @@
-import FeedbackItem from "./FeedbackItem";
+import React from 'react'
 import styled from "styled-components";
+
+import FeedbackItem from "./FeedbackItem";
 
 const Wrapper = styled.div`
   margin-top: 40px;
