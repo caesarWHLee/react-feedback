@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
@@ -28,7 +28,8 @@ const Thumb = styled.div`
   }
 `
 
-const ThumbLabel = styled.label`
+// able to uncheck radio button
+const ThumbMockLabel = styled.div`
   position: relative;
   padding-top: 60px;
   font-size: 18px;
@@ -74,37 +75,83 @@ const ThumbStatistic = styled.span`
 export default function ThumbsField(props) {
   const [thumbUpChecked, setThumbUpChecked] = useState(false)
   const [thumbDownChecked, setThumbDownChecked] = useState(false)
+  const timerRef = useRef(null)
+  const initialMounted = useRef(true)
 
-  const thumbUpInputChanged = (e) => {
-    console.log('thumbUpInputChanged', e.target.checked)
-    setThumbUpChecked(e.target.checked)
-    setThumbDownChecked(!e.target.checked)
+  const clearTimer = useCallback(() => {
+    clearTimeout(timerRef.current)
+    timerRef.current = null;
+  }, [])
+
+  useEffect(() => {
+
+    if (initialMounted.current) {
+      initialMounted.current = !initialMounted.current
+      return
+    }
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+    }
+    timerRef.current = setTimeout(() => {
+      let thumbValue = null
+      if (thumbUpChecked) {
+        thumbValue = true
+      }
+      if (thumbDownChecked) {
+        thumbValue = false
+      }
+      console.log('start sending request!', thumbValue)
+      timerRef.current = null;
+    }, 1000)
+
+    return () => {
+      clearTimer()
+    }
+  }, [thumbUpChecked, thumbDownChecked, clearTimer])
+
+  const thumbUpRadioClicked = () => {
+    console.log('thumbUpRadioClicked')
+    setThumbUpChecked((thumbUpChecked) => {
+      if (thumbUpChecked) {
+        return false
+      } else {
+        setThumbDownChecked(false)
+        return true
+      }
+    })
   }
-  const thumbDownInputChanged = (e) => {
-    console.log('thumbDownInputChanged', e.target.checked)
-    setThumbDownChecked(e.target.checked)
-    setThumbUpChecked(!e.target.checked)
+  const thumbDownRadioClicked = () => {
+    setThumbDownChecked((thumbDownChecked) => {
+      if (thumbDownChecked) {
+        return false
+      } else {
+        setThumbUpChecked(false)
+        return true
+      }
+    })
   }
+
 
   return <Wrapper>
     <Title>這個結果符合實際情況嗎?</Title>
     <Thumbs>
       <Thumb>
-        <ThumbLabel>符合
-          <Input type="radio" name="thumbs" onChange={thumbUpInputChanged} />
+        <ThumbMockLabel onClick={thumbUpRadioClicked}>符合
+          <Input type="radio" name="thumbs" onChange={() => { }} checked={thumbUpChecked} />
           <ThumbIconWrapper>
             <img src={`images/${thumbUpChecked ? 'icon-thumb-up-active.svg' : 'icon-thumb-up.svg'}`} alt="thumb up icon" />
           </ThumbIconWrapper>
-        </ThumbLabel>
+        </ThumbMockLabel>
         <ThumbStatistic>128</ThumbStatistic>
       </Thumb>
       <Thumb>
-        <ThumbLabel>不符合
-          <Input type="radio" name="thumbs" onChange={thumbDownInputChanged} />
+        <ThumbMockLabel onClick={thumbDownRadioClicked}>不符合
+          <Input type="radio" name="thumbs" onChange={() => { }} checked={thumbDownChecked} />
           <ThumbIconWrapper>
             <img src={`images/${thumbDownChecked ? 'icon-thumb-down-active.svg' : 'icon-thumb-down.svg'}`} alt="thumb up icon" />
           </ThumbIconWrapper>
-        </ThumbLabel>
+        </ThumbMockLabel>
         <ThumbStatistic>9</ThumbStatistic>
       </Thumb>
     </Thumbs>
